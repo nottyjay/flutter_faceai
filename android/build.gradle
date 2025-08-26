@@ -1,0 +1,90 @@
+buildscript {
+    ext.kotlin_version = "2.1.0"
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath("com.android.tools.build:gradle:8.7.3")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
+    }
+}
+
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id("com.google.devtools.ksp").version("2.1.0-1.0.28")
+}
+
+group = "com.alphay.flutter.plugin.faceai.flutter_faceai"
+version = "1.0-SNAPSHOT"
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+android {
+    namespace = "com.alphay.flutter.plugin.faceai.flutter_faceai"
+
+    compileSdk = 35
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+
+    sourceSets {
+        main.java.srcDirs += "src/main/kotlin"
+        test.java.srcDirs += "src/test/kotlin"
+    }
+
+    defaultConfig {
+        minSdk = 21
+    }
+
+    dependencies {
+        //SDK接入Demo源码及介绍：https://github.com/FaceAISDK/FaceAISDK_Android
+        api('io.github.faceaisdk:Android:2025.08.18.beta')
+
+        //UVC协议USB摄像头选配，源码: https://github.com/shiyinghan/UVCAndroid
+        implementation('io.github.faceaisdk:UVCCamera:2025.07.30')
+
+        implementation("com.github.bumptech.glide:glide:4.16.0")
+        ksp("com.github.bumptech.glide:ksp:4.16.0")
+        implementation 'androidx.appcompat:appcompat:1.6.0'
+        implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+        implementation "androidx.recyclerview:recyclerview:1.3.2"
+
+        //选照片，用于静态人脸图相似度对比，使用详情见 https://github.com/javakam/FileOperator
+        implementation 'com.github.javakam:file.core:3.9.8@aar'      //核心库必选(Core library required)
+        implementation 'com.github.javakam:file.selector:3.9.8@aar'  //文件选择器(File selector)
+        implementation 'com.github.javakam:file.compressor:3.9.8@aar'//图片压缩,修改自Luban
+        implementation('androidx.constraintlayout:constraintlayout:2.1.4')
+        testImplementation("org.jetbrains.kotlin:kotlin-test")
+        testImplementation("org.mockito:mockito-core:5.0.0")
+    }
+
+    testOptions {
+        unitTests.all {
+            useJUnitPlatform()
+
+            testLogging {
+               events "passed", "skipped", "failed", "standardOut", "standardError"
+               outputs.upToDateWhen {false}
+               showStandardStreams = true
+            }
+        }
+    }
+}
