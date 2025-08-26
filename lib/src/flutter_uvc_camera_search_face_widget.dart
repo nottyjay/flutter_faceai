@@ -1,9 +1,6 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'flutter_faceai_constants.dart';
 import 'flutter_uvc_camera_search_face_controller.dart';
 
 class FlutterUVCCameraSearchFaceWidget extends StatelessWidget {
@@ -53,7 +50,7 @@ class FlutterUVCCameraSearchFaceWidget extends StatelessWidget {
   static const int no_matched = -2;
   static const int un_support_camera = -3;
 
-  Future<void> _addFaceInit_onCompleted(
+  Future<void> _addFaceInitOnCompleted(
     MethodCall call,
     MethodChannel channel,
   ) async {
@@ -139,7 +136,7 @@ class FlutterUVCCameraSearchFaceWidget extends StatelessWidget {
           onPlatformViewCreated: (viewId) {
             final channel = MethodChannel('flutter_uvc_camera_view_$viewId');
             channel.setMethodCallHandler(
-              (call) => _addFaceInit_onCompleted(call, channel),
+              (call) => _addFaceInitOnCompleted(call, channel),
             );
             // 如果提供了控制器，将MethodChannel设置到控制器中
             controller?.setChannel(channel);
@@ -163,7 +160,7 @@ class FlutterUVCCameraSearchFaceWidget extends StatelessWidget {
         "type": "master",
       });
     } on PlatformException catch (e) {
-      print('相机初始化失败: ${e.message}');
+      debugPrint('相机初始化失败: ${e.message}');
     }
   }
 
@@ -178,7 +175,7 @@ class FlutterUVCCameraSearchFaceWidget extends StatelessWidget {
         "type": "slave",
       });
     } on PlatformException catch (e) {
-      print('相机初始化失败: ${e.message}');
+      debugPrint('相机初始化失败: ${e.message}');
     }
   }
 }
