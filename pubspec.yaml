@@ -1,7 +1,8 @@
 name: flutter_faceai
 description: "flutter_faceai"
 version: 0.0.1
-homepage:
+homepage: https://github.com/nottyjay/flutter_faceai
+
 
 environment:
   sdk: ^3.8.1
