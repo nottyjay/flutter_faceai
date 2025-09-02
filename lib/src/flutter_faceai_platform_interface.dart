@@ -51,6 +51,12 @@ abstract class FlutterFaceaiPlatform extends PlatformInterface {
       'saveFaceImageBytes(imageBytes, faceId) has not been implemented.',
     );
   }
+
+  Future<void> stopSearchProcess() {
+    throw UnimplementedError(
+      'saveFaceImageBytes(imageBytes, faceId) has not been implemented.',
+    );
+  }
 }
 
 class FlutterFaceai {

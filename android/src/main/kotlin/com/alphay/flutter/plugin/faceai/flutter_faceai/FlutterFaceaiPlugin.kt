@@ -77,8 +77,9 @@ class FlutterFaceaiPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 call.arguments as Map<String, Any>
             )
             result.success(true)
-        } else if (call.method == "getPlatformVersion") {
-            result.success("Android ${android.os.Build.VERSION.RELEASE}")
+        } else if (call.method == "stopSearchProcess") {
+            FlutterUVCCameraEngine.stopSearchProcess()
+            result.success(true)
         } else if (call.method.equals("delete")) {
             try {
                 val facePathName: String? = call.argument("path")

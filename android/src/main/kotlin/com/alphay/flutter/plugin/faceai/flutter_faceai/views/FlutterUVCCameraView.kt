@@ -173,6 +173,13 @@ class FlutterUVCCameraView(
                 result.error("RuntimeException", e.message, null)
             }
 
+        } else if (call.method.equals("stopSearchProcess")) {
+            try {
+                FlutterUVCCameraEngine.stopSearchProcess()
+            } catch (e: RuntimeException) {
+                result.error("RuntimeException", e.message, null)
+            }
+
         }
     }
 

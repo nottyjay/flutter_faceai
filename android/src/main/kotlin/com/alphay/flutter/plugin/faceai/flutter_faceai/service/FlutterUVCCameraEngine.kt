@@ -3,6 +3,7 @@ package com.alphay.flutter.plugin.faceai.flutter_faceai.service
 import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.ai.face.faceSearch.search.FaceSearchEngine
@@ -17,6 +18,7 @@ import io.flutter.plugin.common.MethodChannel
 
 object FlutterUVCCameraEngine {
 
+    private const val TAG = "FlutterUVCCameraEngine"
     var irBitmap: Bitmap? = null
     var rgbBitmap: Bitmap? = null
     var irReady: Boolean = false
@@ -56,20 +58,27 @@ object FlutterUVCCameraEngine {
 
             override fun onFaceMatched(p0: List<FaceSearchResult?>?, p1: Bitmap?) {
                 super.onFaceMatched(p0, p1)
+                Log.d(TAG, "onFaceMatched: $p0")
             }
 
             override fun onFaceDetected(result: List<FaceSearchResult?>?) {
 //                FaceSearchEngine.Companion.getInstance().stopSearchProcess()
                 if (result?.isNotEmpty() ?: false) {
-                    val newList = result.map { item ->
-                        mapOf(
-                            "faceId" to item!!.faceName,  // 映射 faceName 到 faceId
-                            "score" to item!!.faceScore   // 映射 faceScore 到 score
+                    val newList = result.mapNotNull { item ->
+                        // 安全处理item为空的情况，并过滤faceScore <= 0的项
+                        item?.takeIf { it.faceScore > 0 }?.let { nonNullItem ->
+                            mapOf(
+                                "faceId" to nonNullItem.faceName,  // 映射 faceName 到 faceId
+                                "score" to nonNullItem.faceScore   // 映射 faceScore 到 score
+                            )
+                        }
+                    }
+                    if (newList.isNotEmpty() && newList.size > 0) {
+                        Log.d(TAG, "onFaceDetected: $newList")
+                        channel.invokeMethod(
+                            "createSearchProcess_onFaceDetected", newList
                         )
                     }
-                    channel.invokeMethod(
-                        "createSearchProcess_onFaceDetected", newList
-                    )
                 } else {
 //                    FaceSearchEngine.Companion.getInstance().initSearchParams(faceProcessBuilder!!);
                 }
@@ -106,6 +115,17 @@ object FlutterUVCCameraEngine {
             irReady = false;
             rgbReady = false;
         }
+    }
+
+    fun stopSearchProcess() {
+        if (faceProcessBuilder == null) {
+            return
+        }
+        irReady = false;
+        rgbReady = false;
+        irBitmap = null
+        rgbBitmap = null
+        FaceSearchEngine.Companion.getInstance().stopSearchProcess();
     }
 
     fun retrySearchProcess() {

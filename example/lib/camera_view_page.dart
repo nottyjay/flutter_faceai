@@ -19,7 +19,6 @@ class CameraViewPage extends StatelessWidget {
                 camerakey: 'RGB',
                 horizontalMirror: false,
                 degree: 0,
-                type: 'RGB',
               ),
             ),
             Container(
@@ -30,7 +29,6 @@ class CameraViewPage extends StatelessWidget {
                 camerakey: 'IR',
                 horizontalMirror: false,
                 degree: 0,
-                type: 'IR',
               ),
             ),
           ],

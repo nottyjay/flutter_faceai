@@ -11,9 +11,10 @@ class ControllerExamplePage extends StatefulWidget {
 
 class _ControllerExamplePageState extends State<ControllerExamplePage> {
   // 创建控制器实例
-  final FlutterUVCCameraAddFaceController _controller = FlutterUVCCameraAddFaceController();
+  final FlutterUVCCameraAddFaceController _controller =
+      FlutterUVCCameraAddFaceController();
   final TextEditingController _faceIdController = TextEditingController();
-  
+
   @override
   void dispose() {
     // StatelessWidget版本的FlutterUVCCameraAddFaceWidget不再自动调用controller.dispose()
@@ -25,45 +26,43 @@ class _ControllerExamplePageState extends State<ControllerExamplePage> {
 
   void _onAddFace(Uint8List? imageData) {
     if (imageData != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('人脸添加成功！')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('人脸添加成功！')));
     }
   }
 
   void _onScanFaceTips(int code, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('扫描提示: $message')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('扫描提示: $message')));
   }
 
   Future<void> _saveFace() async {
     final faceId = _faceIdController.text.trim();
     if (faceId.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('请输入人脸ID')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('请输入人脸ID')));
       return;
     }
 
     try {
       await _controller.saveFace(faceId);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('人脸保存成功: $faceId')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('人脸保存成功: $faceId')));
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('人脸保存失败: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('人脸保存失败: $e')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('控制器示例'),
-      ),
+      appBar: AppBar(title: const Text('控制器示例')),
       body: Column(
         children: [
           // 摄像头视图
@@ -74,7 +73,6 @@ class _ControllerExamplePageState extends State<ControllerExamplePage> {
               camerakey: 'camera_key_001',
               horizontalMirror: false,
               degree: 0,
-              type: 'add_face',
               onAddFace: _onAddFace,
               scanFaceTips: _onScanFaceTips,
               controller: _controller, // 注入控制器

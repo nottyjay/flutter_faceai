@@ -46,10 +46,7 @@ class _AddFaceViewPageState extends State<AddFaceViewPage> {
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: Image.memory(
-                        imageBytes,
-                        fit: BoxFit.cover,
-                      ),
+                      child: Image.memory(imageBytes, fit: BoxFit.cover),
                     ),
                   ),
                 ),
@@ -62,7 +59,10 @@ class _AddFaceViewPageState extends State<AddFaceViewPage> {
                     children: [
                       const Text(
                         '请输入人脸ID:',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       TextField(
@@ -72,7 +72,9 @@ class _AddFaceViewPageState extends State<AddFaceViewPage> {
                           border: OutlineInputBorder(),
                         ),
                         inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9_@\u4e00-\u9fa5]')),
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'[a-zA-Z0-9_@\u4e00-\u9fa5]'),
+                          ),
                         ],
                       ),
                     ],
@@ -97,15 +99,15 @@ class _AddFaceViewPageState extends State<AddFaceViewPage> {
 
   Future<void> _saveFace() async {
     final faceId = _faceIdController.text.trim();
-    
+
     // 检查是否已输入
     if (faceId.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('请输入人脸ID')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('请输入人脸ID')));
       return;
     }
-    
+
     // 检查格式要求（文字、数字、下划线、@符号）
     final RegExp validFormat = RegExp(r'^[a-zA-Z0-9_@\u4e00-\u9fa5]+$');
     if (!validFormat.hasMatch(faceId)) {
@@ -114,18 +116,18 @@ class _AddFaceViewPageState extends State<AddFaceViewPage> {
       );
       return;
     }
-    
+
     try {
       await _controller.saveFace(faceId);
       Navigator.of(context).pop(); // 关闭弹窗
       _faceIdController.clear(); // 清空输入框
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('人脸保存成功: $faceId')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('人脸保存成功: $faceId')));
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('人脸保存失败: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('人脸保存失败: $e')));
     }
   }
 
@@ -141,7 +143,6 @@ class _AddFaceViewPageState extends State<AddFaceViewPage> {
             camerakey: 'RGB',
             horizontalMirror: false,
             degree: 0,
-            type: 'RGB',
             controller: _controller,
             onAddFace: (imageBytes) {
               setState(() {

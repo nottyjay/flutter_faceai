@@ -62,7 +62,7 @@ class FlutterUVCCameraSearchFaceWidget extends StatelessWidget {
       }
     } else if (call.method == 'createSearchProcess_onFaceDetected') {
       final result = call.arguments as List;
-      if (result.isNotEmpty) {
+      if (result.isNotEmpty && multipe) {
         onMultipeSearchFace!(
           result
               .map(
@@ -73,6 +73,7 @@ class FlutterUVCCameraSearchFaceWidget extends StatelessWidget {
               )
               .toList(),
         );
+        // channel.invokeMethod("stopSearchProcess");
       }
     } else if (call.method == 'createSearchProcess_onProcessTips') {
       String status = '';
