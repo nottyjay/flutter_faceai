@@ -41,7 +41,7 @@ class MethodChannelFlutterFaceai extends FlutterFaceaiPlatform {
 
   @override
   Future<void> saveFaceImageBytes(Uint8List imageBytes, String faceId) async {
-    return methodChannel.invokeMethod<void>('saveFaceImage', {
+    return methodChannel.invokeMethod<void>('addFaceImage', {
       'imageData': imageBytes,
       'faceId': faceId,
     });
