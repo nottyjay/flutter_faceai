@@ -26,9 +26,9 @@ class FlutterUVCCameraAddFaceWidget extends StatelessWidget {
   final FlutterUVCCameraAddFaceController? controller;
 
   Future<void> _addFaceInit_onCompleted(
-    MethodCall call,
-    MethodChannel channel,
-  ) async {
+      MethodCall call,
+      MethodChannel channel,
+      ) async {
     if (call.method == 'addFaceInit_onCompleted') {
       final result = (call.arguments as Map).cast<String, dynamic>();
       onAddFace(result['images'] as Uint8List);
@@ -36,7 +36,7 @@ class FlutterUVCCameraAddFaceWidget extends StatelessWidget {
       String status = '';
       final code = call.arguments as int;
       switch (code) {
-        //整理返回提示，2025.0815
+      //整理返回提示，2025.0815
         case no_face_repeatedly:
           status = '未识别到人脸';
           break;
@@ -82,7 +82,7 @@ class FlutterUVCCameraAddFaceWidget extends StatelessWidget {
       onPlatformViewCreated: (viewId) {
         final channel = MethodChannel('flutter_uvc_camera_view_$viewId');
         channel.setMethodCallHandler(
-          (call) => _addFaceInit_onCompleted(call, channel),
+              (call) => _addFaceInit_onCompleted(call, channel),
         );
         // 如果提供了控制器，将MethodChannel设置到控制器中
         controller?.setChannel(channel);
