@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 class FlutterUVCCameraAddFaceController {
   MethodChannel? _channel;
   bool _isDisposed = false;
-  
+
   /// 内部方法：设置MethodChannel，由Widget调用
   void setChannel(MethodChannel channel) {
     if (_isDisposed) return;
@@ -20,7 +20,7 @@ class FlutterUVCCameraAddFaceController {
     if (_channel == null) {
       throw StateError('Controller is not attached to a widget. Make sure to pass this controller to FlutterUVCCameraAddFaceWidget.');
     }
-    
+
     try {
       await _channel!.invokeMethod('saveFace', {'faceID': faceID});
     } on PlatformException catch (e) {

@@ -126,7 +126,7 @@ class FlutterFaceaiPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                                 result.success(true)
                             }
                         })
-                result.success(true)
+//                result.success(true)
             } catch (e: RuntimeException) {
                 result.error("RuntimeException", e.message, null)
             }

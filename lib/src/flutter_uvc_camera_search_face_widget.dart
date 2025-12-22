@@ -51,9 +51,9 @@ class FlutterUVCCameraSearchFaceWidget extends StatelessWidget {
   static const int un_support_camera = -3;
 
   Future<void> _addFaceInitOnCompleted(
-    MethodCall call,
-    MethodChannel channel,
-  ) async {
+      MethodCall call,
+      MethodChannel channel,
+      ) async {
     if (call.method == 'createSearchProcess_onMostSimilar') {
       final result = (call.arguments as Map).cast<String, dynamic>();
       if (result.containsKey("faceId")) {
@@ -67,10 +67,10 @@ class FlutterUVCCameraSearchFaceWidget extends StatelessWidget {
           result
               .map(
                 (e) => MultipeSearchResult(
-                  e['faceId'] as String,
-                  e['score'] as double,
-                ),
-              )
+              e['faceId'] as String,
+              e['score'] as double,
+            ),
+          )
               .toList(),
         );
         // channel.invokeMethod("stopSearchProcess");
@@ -78,9 +78,9 @@ class FlutterUVCCameraSearchFaceWidget extends StatelessWidget {
     } else if (call.method == 'createSearchProcess_onProcessTips') {
       String status = '';
       final code =
-          (call.arguments as Map).cast<String, dynamic>()['code'] as int;
+      (call.arguments as Map).cast<String, dynamic>()['code'] as int;
       switch (code) {
-        //整理返回提示，2025.0815
+      //整理返回提示，2025.0815
         case no_matched:
           status = '人脸搜索中';
           break;
@@ -137,7 +137,7 @@ class FlutterUVCCameraSearchFaceWidget extends StatelessWidget {
           onPlatformViewCreated: (viewId) {
             final channel = MethodChannel('flutter_uvc_camera_view_$viewId');
             channel.setMethodCallHandler(
-              (call) => _addFaceInitOnCompleted(call, channel),
+                  (call) => _addFaceInitOnCompleted(call, channel),
             );
             // 如果提供了控制器，将MethodChannel设置到控制器中
             controller?.setChannel(channel);
