@@ -20,7 +20,6 @@ class _SearchFaceViewPageState extends State<SearchFaceViewPage> {
 
   @override
   void dispose() {
-    _controller.dispose();
     super.dispose();
   }
 

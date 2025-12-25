@@ -1,4 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 import 'flutter_uvc_camera_search_face_controller.dart';
@@ -51,9 +55,9 @@ class FlutterUVCCameraSearchFaceWidget extends StatelessWidget {
   static const int un_support_camera = -3;
 
   Future<void> _addFaceInitOnCompleted(
-      MethodCall call,
-      MethodChannel channel,
-      ) async {
+    MethodCall call,
+    MethodChannel channel,
+  ) async {
     if (call.method == 'createSearchProcess_onMostSimilar') {
       final result = (call.arguments as Map).cast<String, dynamic>();
       if (result.containsKey("faceId")) {
@@ -67,10 +71,10 @@ class FlutterUVCCameraSearchFaceWidget extends StatelessWidget {
           result
               .map(
                 (e) => MultipeSearchResult(
-              e['faceId'] as String,
-              e['score'] as double,
-            ),
-          )
+                  e['faceId'] as String,
+                  e['score'] as double,
+                ),
+              )
               .toList(),
         );
         // channel.invokeMethod("stopSearchProcess");
@@ -78,9 +82,9 @@ class FlutterUVCCameraSearchFaceWidget extends StatelessWidget {
     } else if (call.method == 'createSearchProcess_onProcessTips') {
       String status = '';
       final code =
-      (call.arguments as Map).cast<String, dynamic>()['code'] as int;
+          (call.arguments as Map).cast<String, dynamic>()['code'] as int;
       switch (code) {
-      //整理返回提示，2025.0815
+        //整理返回提示，2025.0815
         case no_matched:
           status = '人脸搜索中';
           break;
@@ -121,59 +125,100 @@ class FlutterUVCCameraSearchFaceWidget extends StatelessWidget {
   }
 
   @override
+  // Widget build(BuildContext context) {
+  //   return Stack(
+  //     alignment: Alignment.center,
+  //     children: [
+  //       PlatformViewLink(
+  //         viewType: 'com.alphay.flutter.faceai/flutter_search_uvc_camera_view',
+  //         surfaceFactory: (context, controller) {
+  //           return AndroidViewSurface(
+  //             controller: controller as AndroidViewController,
+  //             gestureRecognizers:
+  //                 const <Factory<OneSequenceGestureRecognizer>>{},
+  //             hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+  //           );
+  //         },
+  //         onCreatePlatformView: (params) {
+  //           final creationParams = {
+  //             "rgb-name": masterName,
+  //             "rgb-key": masterCamerakey,
+  //             "ir-name": slaveName,
+  //             "ir-key": slaveCamerakey,
+  //             "horizontalMirror": horizontalMirror,
+  //             "degree": degree,
+  //             "threshold": threshold,
+  //             "multipe": multipe,
+  //             "type": "master",
+  //           };
+  //
+  //           final viewController = PlatformViewsService.initSurfaceAndroidView(
+  //             id: params.id,
+  //             viewType:
+  //                 'com.alphay.flutter.faceai/flutter_search_uvc_camera_view',
+  //             layoutDirection: TextDirection.ltr,
+  //             creationParams: creationParams,
+  //             creationParamsCodec: const StandardMessageCodec(),
+  //           );
+  //           viewController.addOnPlatformViewCreatedListener(
+  //             params.onPlatformViewCreated,
+  //           );
+  //           viewController.create();
+  //
+  //           final channel = MethodChannel(
+  //             'com.alphay.flutter.faceai__flutter_search_uvc_camera_view',
+  //           );
+  //           channel.setMethodCallHandler(
+  //             (call) => _addFaceInitOnCompleted(call, channel),
+  //           );
+  //           controller?.setChannel(channel);
+  //
+  //           return viewController;
+  //         },
+  //       ),
+  //     ],
+  //   );c
+  // }
+
   Widget build(BuildContext context) {
+              final creationParams = {
+                "rgb-name": masterName,
+                "rgb-key": masterCamerakey,
+                "ir-name": slaveName,
+                "ir-key": slaveCamerakey,
+                "horizontalMirror": horizontalMirror,
+                "degree": degree,
+                "threshold": threshold,
+                "multipe": multipe,
+                "type": "master",
+              };
+              final channel = MethodChannel(
+                'flutter_faceai',
+              );
+              channel.invokeMethod("showSearchDialog", creationParams);
     return Stack(
       alignment: Alignment.center,
       children: [
-        AndroidView(
-          viewType: 'flutter_uvc_camera_view',
-          onPlatformViewCreated: (viewId) {
-            final channel = MethodChannel('flutter_uvc_camera_view_$viewId');
-            _initSlaveCamera(channel);
-          },
-        ),
-        AndroidView(
-          viewType: 'flutter_uvc_camera_view',
-          onPlatformViewCreated: (viewId) {
-            final channel = MethodChannel('flutter_uvc_camera_view_$viewId');
-            channel.setMethodCallHandler(
-                  (call) => _addFaceInitOnCompleted(call, channel),
-            );
-            // 如果提供了控制器，将MethodChannel设置到控制器中
-            controller?.setChannel(channel);
-            _initMasterCamera(channel);
-          },
-        ),
-      ],
-    );
+        Container()
+      ]
+     );
   }
 
   // 提取初始化方法，便于复用和异常处理
-  Future<void> _initMasterCamera(MethodChannel channel) async {
+  Future<void> _initCamera(MethodChannel channel) async {
     try {
+      // Add a small delay to ensure the SurfaceView's Surface is ready.
+      await Future.delayed(const Duration(milliseconds: 200));
       await channel.invokeMethod('init', {
-        "name": masterName,
-        "key": masterCamerakey,
+        "rgb-name": masterName,
+        "rgb-key": masterCamerakey,
+        "ir-name": slaveName,
+        "ir-key": slaveCamerakey,
         "horizontalMirror": horizontalMirror,
         "degree": degree,
         "threshold": threshold,
         "multipe": multipe,
         "type": "master",
-      });
-    } on PlatformException catch (e) {
-      debugPrint('相机初始化失败: ${e.message}');
-    }
-  }
-
-  // 提取初始化方法，便于复用和异常处理
-  Future<void> _initSlaveCamera(MethodChannel channel) async {
-    try {
-      await channel.invokeMethod('init', {
-        "name": slaveName,
-        "key": slaveCamerakey,
-        "horizontalMirror": horizontalMirror,
-        "degree": degree,
-        "type": "slave",
       });
     } on PlatformException catch (e) {
       debugPrint('相机初始化失败: ${e.message}');

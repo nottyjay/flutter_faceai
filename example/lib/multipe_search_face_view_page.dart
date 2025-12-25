@@ -23,7 +23,6 @@ class _MultipeSearchFaceViewPageState extends State<MultipeSearchFaceViewPage> {
 
   @override
   void dispose() {
-    _controller.dispose();
     super.dispose();
   }
 
@@ -157,6 +156,7 @@ class _MultipeSearchFaceViewPageState extends State<MultipeSearchFaceViewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: const Text('多目标搜索')),
       body: Center(
         child: Container(
           width: 300,
@@ -170,11 +170,12 @@ class _MultipeSearchFaceViewPageState extends State<MultipeSearchFaceViewPage> {
               Container(
                 width: 300,
                 height: 300,
+                color: Colors.black,
                 child: FlutterUVCCameraSearchFaceWidget(
                   masterName: '普通RGB摄像头',
-                  masterCamerakey: 'RGB',
+                  masterCamerakey: 'CAM1',
                   slaveName: '普通IR摄像头',
-                  slaveCamerakey: 'IR',
+                  slaveCamerakey: 'CAM2',
                   horizontalMirror: false,
                   degree: 0,
                   threshold: 0.88,

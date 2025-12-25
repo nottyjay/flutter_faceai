@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'flutter_faceai_constants.dart';
 import 'flutter_uvc_camera_add_face_controller.dart';
 
-class FlutterUVCCameraAddFaceWidget extends StatelessWidget {
+class FlutterUVCCameraAddFaceWidget extends StatefulWidget {
   const FlutterUVCCameraAddFaceWidget({
     super.key,
     required this.name,
@@ -25,13 +25,20 @@ class FlutterUVCCameraAddFaceWidget extends StatelessWidget {
   final Function(int, String) scanFaceTips;
   final FlutterUVCCameraAddFaceController? controller;
 
-  Future<void> _addFaceInit_onCompleted(
-      MethodCall call,
-      MethodChannel channel,
-      ) async {
+  @override
+  State<FlutterUVCCameraAddFaceWidget> createState() =>
+      _FlutterUVCCameraAddFaceWidgetState();
+}
+
+class _FlutterUVCCameraAddFaceWidgetState
+    extends State<FlutterUVCCameraAddFaceWidget> {
+  MethodChannel? _channel;
+
+  Future<void> _addFaceInit_onCompleted(MethodCall call,
+      MethodChannel channel,) async {
     if (call.method == 'addFaceInit_onCompleted') {
       final result = (call.arguments as Map).cast<String, dynamic>();
-      onAddFace(result['images'] as Uint8List);
+      widget.onAddFace(result['images'] as Uint8List);
     } else if (call.method == 'addFaceInit_onProcessTips') {
       String status = '';
       final code = call.arguments as int;
@@ -71,7 +78,7 @@ class FlutterUVCCameraAddFaceWidget extends StatelessWidget {
           status = "请勿低头";
           break;
       }
-      scanFaceTips(code, status);
+      widget.scanFaceTips(code, status);
     }
   }
 
@@ -80,13 +87,13 @@ class FlutterUVCCameraAddFaceWidget extends StatelessWidget {
     return AndroidView(
       viewType: 'flutter_uvc_camera_view',
       onPlatformViewCreated: (viewId) {
-        final channel = MethodChannel('flutter_uvc_camera_view_$viewId');
-        channel.setMethodCallHandler(
-              (call) => _addFaceInit_onCompleted(call, channel),
+        _channel = MethodChannel('flutter_uvc_camera_view_$viewId');
+        _channel!.setMethodCallHandler(
+              (call) => _addFaceInit_onCompleted(call, _channel!),
         );
         // 如果提供了控制器，将MethodChannel设置到控制器中
-        controller?.setChannel(channel);
-        _initCamera(channel);
+        widget.controller?.setChannel(_channel!);
+        _initCamera(_channel!);
       },
     );
   }
@@ -99,14 +106,30 @@ class FlutterUVCCameraAddFaceWidget extends StatelessWidget {
   Future<void> _initCamera(MethodChannel channel) async {
     try {
       await channel.invokeMethod('init', {
-        "name": name,
-        "key": camerakey,
-        "horizontalMirror": horizontalMirror,
-        "degree": degree,
+        "name": widget.name,
+        "key": widget.camerakey,
+        "horizontalMirror": widget.horizontalMirror,
+        "degree": widget.degree,
       });
       _startAddFace(channel);
     } on PlatformException catch (e) {
-      print('相机初始化失败: ${e.message}');
+      debugPrint('相机初始化失败: ${e.message}');
     }
+  }
+
+  @override
+  void dispose() {
+    // 释放视图资源
+    _channel?.invokeMethod('releaseView').catchError((e) {
+      debugPrint('释放摄像头资源失败: $e');
+    });
+
+    // 移除回调，避免内存泄漏
+    _channel?.setMethodCallHandler(null);
+
+    // 清空引用
+    _channel = null;
+
+    super.dispose();
   }
 }

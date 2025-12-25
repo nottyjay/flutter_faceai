@@ -11,19 +11,4 @@ class FlutterUVCCameraSearchFaceController {
     _channel = channel;
   }
 
-  /// 重新搜索
-  Future<void> reSearch() async {
-    await _channel?.invokeMethod("reSearchFace");
-  }
-
-  Future<void> stopSearch() async {
-    await _channel?.invokeMethod("stopSearchProcess");
-  }
-
-  /// 释放资源
-  void dispose() {
-    if (_isDisposed) return;
-    _isDisposed = true;
-    _channel = null;
-  }
 }
