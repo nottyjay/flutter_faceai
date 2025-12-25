@@ -44,7 +44,7 @@ public class FlutterFaceaiPlugin implements FlutterPlugin, MethodCallHandler, Ac
 
     @Override
     public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
-        channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "flutter_faceai");
+        channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "com.alphay.flutter.plugin/flutter_uvc_faceai");
         channel.setMethodCallHandler(this);
         this.flutterPluginBinding = flutterPluginBinding;
     }
@@ -52,21 +52,21 @@ public class FlutterFaceaiPlugin implements FlutterPlugin, MethodCallHandler, Ac
     // 注册平台视图工厂的方法
     private void registerViewFactoryIfNeeded() {
         if (!isViewFactoryRegistered && flutterPluginBinding != null && activityBinding != null) {
-            try {
-                // 注册原生视图工厂
-                flutterPluginBinding.getPlatformViewRegistry().registerViewFactory(
-                        "com.alphay.flutter.faceai/flutter_search_uvc_camera_view",
-                        new SearchUVCCameraFactory(
-                                flutterPluginBinding.getBinaryMessenger(),
-                                activityBinding
-                        )
-                );
-                Log.i(TAG, "UI注册成功");
-                isViewFactoryRegistered = true;
-            } catch (Exception e) {
-                // 如果注册失败，记录错误但不崩溃
-                Log.e("FlutterFaceaiPlugin", "Failed to register view factory", e);
-            }
+//            try {
+//                // 注册原生视图工厂
+//                flutterPluginBinding.getPlatformViewRegistry().registerViewFactory(
+//                        "com.alphay.flutter.faceai/flutter_search_uvc_camera_view",
+//                        new SearchUVCCameraFactory(
+//                                flutterPluginBinding.getBinaryMessenger(),
+//                                activityBinding
+//                        )
+//                );
+//                Log.i(TAG, "UI注册成功");
+//                isViewFactoryRegistered = true;
+//            } catch (Exception e) {
+//                // 如果注册失败，记录错误但不崩溃
+//                Log.e("FlutterFaceaiPlugin", "Failed to register view factory", e);
+//            }
         }
     }
 
@@ -132,8 +132,8 @@ public class FlutterFaceaiPlugin implements FlutterPlugin, MethodCallHandler, Ac
             } catch (RuntimeException e) {
                 result.error("RuntimeException", e.getMessage(), null);
             }
-        } else if ("showSearchDialog".equals(call.method)) {
-            showEmbeddedDialog((Map<String, Object>) call.arguments);
+        } else if ("startSearch".equals(call.method)) {
+            startSearch((Map<String, Object>) call.arguments);
         } else {
             result.notImplemented();
         }
@@ -142,30 +142,10 @@ public class FlutterFaceaiPlugin implements FlutterPlugin, MethodCallHandler, Ac
     /**
      * 显示内嵌Fragment的Dialog
      */
-    private void showEmbeddedDialog(Map<String, Object> params) {
-        // 1. 创建自定义Dialog
+    private void startSearch(Map<String, Object> params) {
         FragmentActivity activity = (FragmentActivity) activityBinding.getActivity();
-
-//        Dialog dialog = new Dialog(activity);
-//        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        dialog.setContentView(R.layout.dialog_embedded); // 自定义弹窗布局
-//        dialog.getWindow().setLayout(
-//                ViewGroup.LayoutParams.MATCH_PARENT,
-//                ViewGroup.LayoutParams.WRAP_CONTENT
-//        );
-//
-//        // 2. 嵌入Fragment到Dialog中
         FragmentManager fragmentManager = activity.getSupportFragmentManager();
-//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        // 创建自定义Fragment并传递参数
         SearchUVCCamaraFragment fragment = new SearchUVCCamaraFragment(params, activity, channel);
-
-        // 将Fragment添加到Dialog的容器中（布局中需有FrameLayout）
-//        fragmentTransaction.replace(R.id.fragment_container222, fragment);
-//        fragmentTransaction.commitNow(); // <--- 修改在这里
-//
-//        // 3. 显示Dialog
-//        dialog.show();
         fragment.show(fragmentManager, "search_uvc");
     }
 

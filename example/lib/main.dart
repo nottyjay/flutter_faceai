@@ -47,6 +47,7 @@ class _MyAppState extends State<MyApp> {
     try {
       debugPrint('头像文件缓存至' + baseDir.path);
       _flutterFaceaiPlugin.init(baseDir.path + "/");
+      _flutterFaceaiPlugin.saveFaceImageByFilePath("/storage/emulated/0/1.jpg", "jll.jpg");
     } on PlatformException {
       debugPrint('Failed to get platform version.');
     }

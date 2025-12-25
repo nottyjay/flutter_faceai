@@ -42,9 +42,7 @@ class MockFlutterFaceaiPlatform
     throw UnimplementedError();
   }
 
-  @override
-  Future<void> stopSearchProcess() {
-    // TODO: implement stopSearchProcess
+  Future<void> startSearch(Map params) {
     throw UnimplementedError();
   }
 }

@@ -36,6 +36,7 @@ public class UVCCameraManager {
     private int previewHeight = UVC_CAMERA_HEIGHT;
     private OnFaceAIAnalysisCallBack faceAIAnalysisCallBack;
     private OnCameraStatusCallBack onCameraStatuesCallBack;
+    private OnPreviewSizeCallBack onPreviewSizeCallBack;
 
     private int width = UVC_CAMERA_WIDTH;
     private int height = UVC_CAMERA_HEIGHT;
@@ -49,6 +50,10 @@ public class UVCCameraManager {
 
     public interface OnFaceAIAnalysisCallBack {
         void onBitmapFrame(Bitmap bitmap);
+    }
+
+    public interface OnPreviewSizeCallBack {
+        void onPreviewSize(int width, int height);
     }
 
     public UVCCameraManager(CameraBuilder cameraBuilder) {
@@ -70,6 +75,14 @@ public class UVCCameraManager {
         this.onCameraStatuesCallBack = callBack;
     }
 
+    public void setOnPreviewSizeCallBack(OnPreviewSizeCallBack callBack) {
+        this.onPreviewSizeCallBack = callBack;
+    }
+
+    public void setAutoAspectRatio(boolean autoAspectRatio) {
+        this.autoAspectRatio = autoAspectRatio;
+    }
+
     public void releaseCameraHelper() {
         if (mCameraHelper != null) {
             mCameraHelper.setStateCallback(null);
@@ -79,6 +92,7 @@ public class UVCCameraManager {
 
         faceAIAnalysisCallBack = null;
         onCameraStatuesCallBack = null; // 添加这行
+        onPreviewSizeCallBack = null;
         cameraBuilder = null;
     }
 
@@ -152,6 +166,14 @@ public class UVCCameraManager {
                         height = previewSize.height;
                         if (autoAspectRatio && cameraBuilder.getCameraView() != null) {
                             cameraBuilder.getCameraView().setAspectRatio(width, height);
+                        }
+                        if (onPreviewSizeCallBack != null) {
+                            int rotateDegree = cameraBuilder.getDegree() % 360;
+                            if (rotateDegree < 0) rotateDegree += 360;
+                            boolean swap = rotateDegree == 90 || rotateDegree == 270;
+                            int displayWidth = swap ? height : width;
+                            int displayHeight = swap ? width : height;
+                            onPreviewSizeCallBack.onPreviewSize(displayWidth, displayHeight);
                         }
                     } else {
                         Toast.makeText(context, "无对应的分辨率，请调试修正", Toast.LENGTH_LONG).show();

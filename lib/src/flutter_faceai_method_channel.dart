@@ -9,7 +9,7 @@ import 'flutter_faceai_platform_interface.dart';
 class MethodChannelFlutterFaceai extends FlutterFaceaiPlatform {
   /// The method channel used to interact with the native platform.
   @visibleForTesting
-  final methodChannel = const MethodChannel('flutter_faceai');
+  final methodChannel = const MethodChannel('com.alphay.flutter.plugin/flutter_uvc_faceai');
 
   @override
   Future<String?> getPlatformVersion() async {
@@ -45,5 +45,10 @@ class MethodChannelFlutterFaceai extends FlutterFaceaiPlatform {
       'imageData': imageBytes,
       'faceId': faceId,
     });
+  }
+
+  @override
+  Future<void> startSearch(Map params) {
+    return methodChannel.invokeMethod<void>('startSearch', params);
   }
 }

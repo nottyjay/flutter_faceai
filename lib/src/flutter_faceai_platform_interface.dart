@@ -52,9 +52,9 @@ abstract class FlutterFaceaiPlatform extends PlatformInterface {
     );
   }
 
-  Future<void> stopSearchProcess() {
+  Future<void> startSearch(Map params) {
     throw UnimplementedError(
-      'saveFaceImageBytes(imageBytes, faceId) has not been implemented.',
+      'startSearch(params) has not been implemented.',
     );
   }
 }
@@ -89,6 +89,10 @@ class FlutterFaceai {
       imageBytes,
       faceId,
     );
+  }
+
+  Future<void> startSearch(Map params) {
+    return FlutterFaceaiPlatform.instance.startSearch(params);
   }
 }
 
